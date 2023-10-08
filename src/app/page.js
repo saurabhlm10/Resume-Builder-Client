@@ -7,7 +7,7 @@ import Projects from "../components/Projects";
 import NavBar from "../components/NavBar";
 import Footer from "../components/Footer";
 import Resume from "@/components/Resume";
-import { DownloadResumeAsPDF } from "@/components/DownloadResume";
+// import { DownloadResumeAsPDF } from "@/components/DownloadResume";
 
 const Home = () => {
   return (
@@ -30,7 +30,7 @@ const Home = () => {
               {" "}
               {/* Add these classes */}
               <Resume />
-              <DownloadResumeAsPDF />
+              {/* <DownloadResumeAsPDF /> */}
             </div>
           </div>
         </div>
