@@ -26,7 +26,7 @@ const Resume = () => {
           {resume.workExperience.title}
         </h3>
         <ul className="list-disc pl-5 space-y-2">
-          {resume.workExperience && resume.workExperience.length > 0 && resume.workExperience.description.map((desc, index) => (
+          {resume.workExperience.description && resume.workExperience.description.length > 0 && resume.workExperience.description.map((desc, index) => (
             <li key={index} className="text-gray-700">
               {desc}
             </li>

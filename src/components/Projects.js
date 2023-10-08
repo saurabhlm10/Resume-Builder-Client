@@ -8,18 +8,19 @@ const Projects = () => {
 
   const [projectDescription, setProjectDescription] = useState(""); // For user to type in a custom project
   const [projectChoices, setProjectChoices] = useState([]);
+  const [loading, setLoading] = useState(false); // Loading state
 
   const handleProjectsSubmit = async () => {
+    setLoading(true); // Set loading to true when starting the request
     try {
       const response = await axiosInstance.get("/getProjects");
-
       setProjectChoices(response.data.outputs);
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false); // Set loading to false when request is finished
     }
   };
-
-  // console.log(resume)
 
   return (
     <div className="mb-8 p-4 bg-gradient-to-tr from-red-200 to-pink-200 rounded-lg shadow-md">
@@ -44,44 +45,48 @@ const Projects = () => {
       <button
         className="px-6 py-2 bg-rose-600 text-white rounded hover:bg-rose-700 focus:outline-none focus:bg-rose-800 active:bg-rose-900"
         onClick={handleProjectsSubmit}
+        disabled={loading}  // Disable the button during loading
       >
-        Submit
+        {loading ? 'Loading...' : 'Submit'}
       </button>
+
+      {/* Render the project choices from the backend */}
       <div className="mt-4 space-y-4">
-        {projectChoices.map((choice, idx) => (
-          <div
-            key={idx}
-            className="p-4 bg-white rounded shadow hover:shadow-lg transition-shadow duration-300"
-          >
-            {choice.projects.map((project, pIdx) => (
-              <div key={pIdx} className="my-4">
-                <h3 className="text-xl font-semibold mb-2 text-red-700">
-                  {project.title}
-                </h3>
-                <p className="text-gray-700">{project.description}</p>
-              </div>
-            ))}
-            <div className="mt-2">
-              <button
-                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 focus:outline-none focus:bg-red-700 active:bg-red-800"
-                onClick={() =>
-                  setResume((prevState) => ({
-                    ...prevState,
-                    projects: choice.projects
-                    // [
-                    //   ...prevState.projects,
-                    //   ...choice.projects.map(
-                    //     (p) => p.title + ": " + p.description
-                    //   ),
-                    // ],
-                  }))
-                }
-              >
-                Use
-              </button>
-            </div>
+        {loading ? (
+          // Spinner using tailwind
+          <div className="flex justify-center">
+            <div className="w-6 h-6 border-t-2 border-red-500 rounded-full animate-spin"></div>
           </div>
-        ))}
+        ) : (
+          projectChoices.map((choice, idx) => (
+            <div
+              key={idx}
+              className="p-4 bg-white rounded shadow hover:shadow-lg transition-shadow duration-300"
+            >
+              {choice.projects.map((project, pIdx) => (
+                <div key={pIdx} className="my-4">
+                  <h3 className="text-xl font-semibold mb-2 text-red-700">
+                    {project.title}
+                  </h3>
+                  <p className="text-gray-700">{project.description}</p>
+                </div>
+              ))}
+              <div className="mt-2">
+                <button
+                  className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 focus:outline-none focus:bg-red-700 active:bg-red-800"
+                  onClick={() =>
+                    setResume((prevState) => ({
+                      ...prevState,
+                      projects: choice.projects
+                    }))
+                  }
+                >
+                  Use
+                </button>
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

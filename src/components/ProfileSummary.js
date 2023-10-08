@@ -1,22 +1,24 @@
-// components/ProfileSummary.js
 import { useState } from 'react';
 import axiosInstance from "@/axios";
-import { useResume } from '../contexts/ResumeContext'; // Corrected the path
+import { useResume } from '../contexts/ResumeContext';
 
 const ProfileSummary = () => {
-  const { resume, setResume } = useResume(); // Using the centralized state management
-  // console.log(resume);
+  const { resume, setResume } = useResume();
   
   const exampleSummary = "I am a data scientist having an experience of around 1 year and working at xyz company. I have good knowledge in Python, ML, DL, Computer Vision, NLP, and generative ai.";
   const [profileSummary, setProfileSummary] = useState(exampleSummary);
-  const [summaryChoices, setSummaryChoices] = useState([]);  // State to hold choices from backend
+  const [summaryChoices, setSummaryChoices] = useState([]);
+  const [loading, setLoading] = useState(false);  // Loading state
   
   const handleProfileSummarySubmit = async () => {
+    setLoading(true);  // Set loading to true when starting the request
     try {
       const response = await axiosInstance.get("/getProfileSummary");
-      setSummaryChoices(response.data.outputs); // Set the choices to state
+      setSummaryChoices(response.data.outputs);
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);  // Set loading to false when request is finished
     }
   };
 
@@ -41,23 +43,31 @@ const ProfileSummary = () => {
       <button
         className="px-6 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 focus:outline-none focus:bg-indigo-800 active:bg-indigo-900"
         onClick={handleProfileSummarySubmit}
+        disabled={loading}  // Disable the button during loading
       >
-        Submit
+        {loading ? 'Loading...' : 'Submit'}
       </button>
 
       {/* Render the summary choices from the backend with "Use" buttons */}
       <div className="mt-4 space-y-2">
-        {summaryChoices.map((choice, idx) => (
-          <div key={idx} className="flex justify-between items-center p-2 bg-gray-200 rounded">
-            <p>{choice}</p>
-            <button 
-              className="px-3 py-1 bg-blue-500 text-white rounded"
-              onClick={() => setResume(prevState => ({ ...prevState, profileSummary: choice }))}
-            >
-              Use
-            </button>
+        {loading ? (
+          // Spinner using tailwind
+          <div className="flex justify-center">
+            <div className="w-6 h-6 border-t-2 border-blue-500 rounded-full animate-spin"></div>
           </div>
-        ))}
+        ) : (
+          summaryChoices.map((choice, idx) => (
+            <div key={idx} className="flex justify-between items-center p-2 bg-gray-200 rounded">
+              <p>{choice}</p>
+              <button 
+                className="px-3 py-1 bg-blue-500 text-white rounded"
+                onClick={() => setResume(prevState => ({ ...prevState, profileSummary: choice }))}
+              >
+                Use
+              </button>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

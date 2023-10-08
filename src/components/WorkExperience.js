@@ -1,5 +1,3 @@
-// components/WorkExperience.js
-
 import { useState } from "react";
 import axiosInstance from "@/axios";
 import { useResume } from "@/contexts/ResumeContext";
@@ -9,20 +7,19 @@ const WorkExperience = () => {
 
   const [experience, setExperience] = useState("");
   const [experienceChoices, setExperienceChoices] = useState([]);
+  const [loading, setLoading] = useState(false);  // Loading state
 
   const handleExperienceSubmit = async () => {
+    setLoading(true);  // Set loading to true when starting the request
     try {
       const response = await axiosInstance.get("/getWorkExperience");
-
       setExperienceChoices(response.data.outputs);
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);  // Set loading to false when request is finished
     }
   };
-
-  console.log();
-  console.log(resume);
-
 
   return (
     <div className="mb-8 p-4 bg-gradient-to-tr from-green-200 to-yellow-200 rounded-lg shadow-md">
@@ -48,34 +45,41 @@ const WorkExperience = () => {
         className="px-6 py-2 bg-teal-600 text-white rounded hover:bg-teal-700 focus:outline-none focus:bg-teal-800 active:bg-teal-900"
         onClick={handleExperienceSubmit}
       >
-        {console.log('hello')}
-        Submit
+        {loading ? 'Loading...' : 'Submit'}
       </button>
-      <div className="mt-4 space-y-4">
-        {experienceChoices.map((choice, idx) => (
-          <div key={idx} className="p-4 bg-gray-100 rounded shadow">
-            <h3 className="text-lg font-semibold mb-2">{choice.title}</h3>
-            <ul className="pl-5 list-disc">
-              {choice.description.map((desc, descIdx) => (
-                <li key={descIdx}>{desc}</li>
-              ))}
-            </ul>
-            <div className="mt-2">
-              <button
-                className="px-4 py-2 bg-green-500 text-white rounded"
-                onClick={() =>
-                  setResume((prevState) => ({
-                    ...prevState,
-                    workExperience: choice,
-                  }))
-                }
-              >
-                Use
-              </button>
+
+      {loading ? (
+        // Spinner using tailwind
+        <div className="mt-4 flex justify-center">
+          <div className="w-6 h-6 border-t-2 border-green-500 rounded-full animate-spin"></div>
+        </div>
+      ) : (
+        <div className="mt-4 space-y-4">
+          {experienceChoices.map((choice, idx) => (
+            <div key={idx} className="p-4 bg-gray-100 rounded shadow">
+              <h3 className="text-lg font-semibold mb-2">{choice.title}</h3>
+              <ul className="pl-5 list-disc">
+                {choice.description.map((desc, descIdx) => (
+                  <li key={descIdx}>{desc}</li>
+                ))}
+              </ul>
+              <div className="mt-2">
+                <button
+                  className="px-4 py-2 bg-green-500 text-white rounded"
+                  onClick={() =>
+                    setResume((prevState) => ({
+                      ...prevState,
+                      workExperience: choice,
+                    }))
+                  }
+                >
+                  Use
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
