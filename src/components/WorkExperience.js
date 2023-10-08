@@ -48,6 +48,7 @@ const WorkExperience = () => {
         className="px-6 py-2 bg-teal-600 text-white rounded hover:bg-teal-700 focus:outline-none focus:bg-teal-800 active:bg-teal-900"
         onClick={handleExperienceSubmit}
       >
+        {console.log('hello')}
         Submit
       </button>
       <div className="mt-4 space-y-4">
