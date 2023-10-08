@@ -1,7 +1,7 @@
 const { default: axios } = require("axios");
 
 const axiosInstance = axios.create({
-    baseURL: 'http://localhost:4000'
+    baseURL: 'https://resume-builder-server.cyclic.app/'
 })
 
 export default axiosInstance
